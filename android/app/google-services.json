@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1042249026227",
+    "project_id": "greenage-6d49e",
+    "storage_bucket": "greenage-6d49e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042249026227:android:029330d2b17094cb493ec6",
+        "android_client_info": {
+          "package_name": "com.example.greenage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042249026227-ihru3ql4a1d468cf9adt0f26f86v3es1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJJ86gRhxBuMahx8EqUk6ABUKbRepy9Cw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042249026227-ihru3ql4a1d468cf9adt0f26f86v3es1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
