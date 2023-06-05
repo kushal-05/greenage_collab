@@ -186,6 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                         passwordController.clear();
                       }
                     },
+                    child: const Text("Tap me"),
                   ),
                   // sign in button
                   GestureDetector(

@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:greenage/data/profile_data.dart';
 import 'package:greenage/data/user_data.dart';
+import 'package:greenage/pages/login_page.dart';
 import 'package:greenage/screens/edit_profile.dart';
 import 'package:greenage/screens/pickup_history.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -142,7 +144,7 @@ class _ProfileState extends State<Profile> {
                     radius: 60.0,
                     backgroundImage: dp == null
                         // ? (_imageFile == null
-                        ? const AssetImage("assets/images/profile.jpeg")
+                        ? const AssetImage("lib/images/profile.jpeg")
                             as ImageProvider<Object>
                         //     : FileImage(File(_imageFile!.path)))
                         : FileImage(File(dp!.path)),
@@ -225,7 +227,16 @@ class _ProfileState extends State<Profile> {
               Icons.logout_outlined,
               color: Colors.red,
             ),
-            onTap: () {},
+            onTap: () {
+                FirebaseAuth.instance.signOut();
+                //Navigator.of(context).popUntil((route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+            },
           ),
         ],
       ),
