@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:greenage/pages/login_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:greenage/widgets/home.dart';
 import 'package:mysql1/mysql1.dart';
 
 dynamic conn;
@@ -66,6 +67,10 @@ class _SignUpPageState extends State<signUp> {
       'email': emailId,
       'phone number': phoneNumber,
     });
+    Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (context) => const Home()),
+      );
   }
 
   // on click of sign in with google

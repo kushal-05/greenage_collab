@@ -5,8 +5,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:greenage/pages/loginPhone.dart';
 import 'package:greenage/pages/signup_page.dart';
+import 'package:greenage/widgets/home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,10 +26,28 @@ class _LoginPageState extends State<LoginPage> {
 
   // on click of sign in
   Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      Navigator.push(context,
+      MaterialPageRoute(builder: (context) => Home()),
+      );
+    } catch (Error) {
+      if (Error is FirebaseAuthException) {
+        if (Error.code == 'wrong-password') {
+          print("Incorrect password");
+          passwordController.clear(); // Clear the password field
+          Fluttertoast.showToast(
+              msg: "Please enter valid password", toastLength: Toast.LENGTH_LONG,
+              
+              );
+        } else {
+          print("Authentication failed: ${Error.message}");
+        }
+      }
+    }
   }
 
   // on click of use mobile number
@@ -63,16 +83,16 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formfield,
                 child: Column(children: [
                   SizedBox(height: 80),
-              
+
                   // logo
                   Image.asset(
                     'lib/images/logo_pages.png',
                     height: 90,
                   ),
                   SizedBox(height: 90),
-              
+
                   // email textfield
-              
+
                   SizedBox(
                     height: 55,
                     child: Padding(
@@ -84,7 +104,8 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 20),
                         controller: emailController,
                         decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 18),
                           hintText: "email",
                           prefixIcon: Icon(
                             Icons.mail_rounded,
@@ -104,22 +125,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         validator: (value) {
                           bool emailValid = RegExp(
-                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(value!);
-                          if(value.isEmpty){
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value!);
+                          if (value.isEmpty) {
                             return "Enter email";
                           }
-                          
-                          if(!emailValid){
+
+                          if (!emailValid) {
                             return "Enter valid email";
                           }
                         },
                       ),
                     ),
                   ),
-              
+
                   // password textfield
-              
+
                   SizedBox(height: 15),
                   SizedBox(
                     height: 55,
@@ -132,7 +153,8 @@ class _LoginPageState extends State<LoginPage> {
                         controller: passwordController,
                         obscureText: passToggle,
                         decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 18),
                           hintText: "password",
                           prefixIcon: Icon(
                             Icons.lock_rounded,
@@ -140,16 +162,15 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           suffixIconColor: Color.fromARGB(255, 166, 166, 166),
                           suffixIcon: InkWell(
-                            
                             onTap: () {
                               setState(() {
                                 passToggle = !passToggle;
-                                
                               });
                             },
-                            child: Icon(passToggle ? Icons.visibility : Icons.visibility_off),
+                            child: Icon(passToggle
+                                ? Icons.visibility
+                                : Icons.visibility_off),
                           ),
-                          
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Color.fromARGB(255, 45, 45, 45),
@@ -162,11 +183,10 @@ class _LoginPageState extends State<LoginPage> {
                           fillColor: Color.fromARGB(255, 45, 45, 45),
                           filled: true,
                         ),
-                        validator: (value){
-                          if(value!.isEmpty){
+                        validator: (value) {
+                          if (value!.isEmpty) {
                             return "Enter password";
-                          }
-                          else if(passwordController.text.length < 6){
+                          } else if (passwordController.text.length < 6) {
                             return "Password should contain a minimum of 6 characters";
                           }
                         },
@@ -174,13 +194,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-              
+
                   const SizedBox(
                     height: 20,
                   ),
                   InkWell(
                     onTap: () {
-                      if(_formfield.currentState!.validate()){
+                      if (_formfield.currentState!.validate()) {
                         print("data added successfully");
                         emailController.clear();
                         passwordController.clear();
@@ -211,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-              
+
                   const SizedBox(height: 35),
                   // or
                   Padding(
@@ -242,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 40),
-              
+
                   // use phone number button
                   GestureDetector(
                     onTap: goToPhone,
@@ -266,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-              
+
                   const SizedBox(height: 110),
                   //not a member? register now
                   Row(

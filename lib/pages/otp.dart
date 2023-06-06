@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:greenage/pages/home_page.dart';
 import 'package:greenage/pages/loginPhone.dart';
+import 'package:greenage/widgets/home.dart';
 import 'package:pinput/pinput.dart';
 
 class otp extends StatefulWidget {
@@ -28,7 +29,7 @@ class _otpPage extends State<otp> {
       await auth.signInWithCredential(credential);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(),),
+        MaterialPageRoute(builder: (context) => Home(),),
         );
     }
     catch(e){

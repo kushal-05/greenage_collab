@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
       );
 
       {
-        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = 2');
+        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = 1');
         for(var row in results) {
           print(row.toString());
           //Setting up user data
@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
           obj.setPhone = row['phone_number'].toString();
           obj.setEmail = await row['email'];
         }
-        final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = 2');
+        final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = 1');
         for (var row in results1) {
           print(row.toString());
           // Setting up user data

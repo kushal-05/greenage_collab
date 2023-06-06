@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:greenage/data/profile_data.dart';
+import 'package:greenage/pages/login_page.dart';
 import 'package:greenage/widgets/home.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +20,8 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   bool _passwordVisible = true;
   bool _confirmPasswordVisible = true;
-  var _name, _email, _phone;
+  var _name = name, _email = emailID, _phone = mobile;
+  final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmNewPasswordController =
       TextEditingController();
@@ -29,19 +31,30 @@ class _EditProfileState extends State<EditProfile> {
   final currentUser = FirebaseAuth.instance.currentUser;
 
   changePassword() async {
-    try{
+    try {
+      // Reauthenticate the user with current password
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: emailID,
+        password: _oldPasswordController.text,
+      );
+      await currentUser!.reauthenticateWithCredential(credential);
       await currentUser!.updatePassword(_newPasswordController.text);
-    } catch(Error){
-
+      //FirebaseAuth.instance.signOut();
+      //Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (Error) {
+      if (Error is FirebaseAuthException) {
+        if (Error.code == 'wrong-password') {
+          print("Incorrect password");
+        } else
+          print("Authentication failed: ${Error.message}");
+      }
     }
   }
 
   changeEmail() async {
-    try{
+    try {
       await currentUser!.updateEmail(emailID);
-    } catch(Error){
-      
-    }
+    } catch (Error) {}
   }
 
   @override
@@ -231,6 +244,29 @@ class _EditProfileState extends State<EditProfile> {
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
                   obscureText: _passwordVisible,
+                  controller: _oldPasswordController,
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _passwordVisible
+                                ? _passwordVisible = false
+                                : _passwordVisible = true;
+                          });
+                        },
+                        icon: _passwordVisible
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility)),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Old password',
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextField(
+                  obscureText: _passwordVisible,
                   controller: _newPasswordController,
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
@@ -296,7 +332,7 @@ class _EditProfileState extends State<EditProfile> {
           radius: 60.0,
           backgroundImage: _ximageFile == null
               // ? (_imageFile == null
-              ? const AssetImage("assets/images/profile.jpeg")
+              ? const AssetImage("lib/images/profile.jpeg")
                   as ImageProvider<Object>
               //     : FileImage(File(_imageFile!.path)))
               : FileImage(File(_ximageFile!.path)),

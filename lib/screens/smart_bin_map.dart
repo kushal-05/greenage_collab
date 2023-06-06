@@ -166,7 +166,7 @@ class _SmartBinMapState extends State<SmartBinMap> {
                       width: 30,
                       height: 30,
                       child: Image.asset(
-                        "assets/images/bin_marker.png",
+                        "lib/images/bin_marker.png",
                         //fit: BoxFit.contain,
                       ),
                     ),
