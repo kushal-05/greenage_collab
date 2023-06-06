@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,7 @@ import 'package:mysql1/mysql1.dart';
 class loginPhone extends StatefulWidget {
   const loginPhone({super.key});
 
-  static String Verify = ""; 
+  static String Verify = "";
 
   @override
   State<loginPhone> createState() => _loginPhoneState();
@@ -24,8 +25,7 @@ class _loginPhoneState extends State<loginPhone> {
   void initState() {
     countryCode.text = "+91";
     super.initState();
-    Future.delayed(const Duration(seconds: 0),() async {
-
+    Future.delayed(const Duration(seconds: 0), () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
           host: '34.93.37.194',
@@ -34,28 +34,52 @@ class _loginPhoneState extends State<loginPhone> {
           password: 'root',
           db: 'greenage',
         ),
-    );
-    
-    }
-    );
+      );
+    });
   }
+
   dynamic conn;
 
   Future<void> checkPhoneNumber() async {
-    var result = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE phone_number = (?)',[phoneController.text.trim()]);
-    if(result!=null){
-      sendOtp();
-    }
-    else{
-      
-    }
+    var usersCollection = FirebaseFirestore.instance.collection('users');
+  var querySnapshot = await usersCollection
+      .where('phone number', isEqualTo: phoneController.text.trim())
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    sendOtp();
+  } else {
+    Fluttertoast.showToast(
+      msg: "Phone number provided is not valid",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      textColor: Color.fromARGB(255, 0, 0, 0),
+      fontSize: 16.0,
+    );
+    phoneController.clear();
   }
-  
+    /*var result = await conn.query(
+        'SELECT * FROM SIGNEDUP_USERS WHERE phone_number = (?)',[phoneController.text.trim()]);
+    if (result != null) {
+      sendOtp();
+    } else {
+      Fluttertoast.showToast(
+          msg: "Phone number provided is not valid",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          textColor: Color.fromARGB(255, 0, 0, 0),
+          fontSize: 16.0);
+      phoneController.clear();
+    }*/
+  }
+
   // on click of sign in
   Future sendOtp() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
-
-            
       phoneNumber: countryCode.text + phoneController.text.trim(),
       verificationCompleted: (PhoneAuthCredential credential) {},
       verificationFailed: (FirebaseAuthException e) {
@@ -71,7 +95,7 @@ class _loginPhoneState extends State<loginPhone> {
         }
       },
       codeSent: (String verificationId, int? resendToken) {
-        loginPhone.Verify=verificationId;
+        loginPhone.Verify = verificationId;
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const otp()),
@@ -79,7 +103,6 @@ class _loginPhoneState extends State<loginPhone> {
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
-    
   }
 
   @override

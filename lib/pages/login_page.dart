@@ -41,7 +41,8 @@ class _LoginPageState extends State<LoginPage> {
           passwordController.clear(); // Clear the password field
           Fluttertoast.showToast(
               msg: "Please enter valid password", toastLength: Toast.LENGTH_LONG,
-              
+              backgroundColor: Color.fromARGB(255, 255, 255, 255),
+              textColor: Color.fromARGB(255, 0, 0, 0)
               );
         } else {
           print("Authentication failed: ${Error.message}");
