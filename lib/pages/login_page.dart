@@ -9,6 +9,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:greenage/pages/loginPhone.dart';
 import 'package:greenage/pages/signup_page.dart';
 import 'package:greenage/widgets/home.dart';
+import 'package:mysql1/mysql1.dart';
+
+dynamic conn2;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,6 +27,25 @@ class _LoginPageState extends State<LoginPage> {
   bool passToggle = true;
   final _formfield = GlobalKey<FormState>();
 
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 0),() async {
+
+      conn2 = await MySqlConnection.connect(
+        ConnectionSettings(
+          host: '34.93.37.194',
+          port: 3306,
+          user: 'root',
+          password: 'root',
+          db: 'greenage',
+        ),
+    );
+    
+    }
+    );
+  }
+
   // on click of sign in
   Future signIn() async {
     try {
@@ -31,8 +53,14 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Navigator.push(context,
-      MaterialPageRoute(builder: (context) => Home()),
+      var result3 = await conn2.query('SELECT `id` FROM SIGNEDUP_USERS WHERE `email`= (?)',emailController.text.trim());
+      //obj.setID = result3;
+      for (var row1 in result3) {
+        obj.setID = await row1['id'];
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Home()),
       );
     } catch (Error) {
       if (Error is FirebaseAuthException) {
@@ -40,10 +68,10 @@ class _LoginPageState extends State<LoginPage> {
           print("Incorrect password");
           passwordController.clear(); // Clear the password field
           Fluttertoast.showToast(
-              msg: "Please enter valid password", toastLength: Toast.LENGTH_LONG,
+              msg: "Please enter valid password",
+              toastLength: Toast.LENGTH_LONG,
               backgroundColor: Color.fromARGB(255, 255, 255, 255),
-              textColor: Color.fromARGB(255, 0, 0, 0)
-              );
+              textColor: Color.fromARGB(255, 0, 0, 0));
         } else {
           print("Authentication failed: ${Error.message}");
         }

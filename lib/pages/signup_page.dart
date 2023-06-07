@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:greenage/data/user_data.dart';
 import 'package:greenage/pages/login_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:greenage/widgets/home.dart';
 import 'package:mysql1/mysql1.dart';
+import 'package:greenage/widgets/home.dart';
 
 dynamic conn;
 
@@ -57,7 +59,11 @@ class _SignUpPageState extends State<signUp> {
       emailController.text.trim(), 
       phoneController.text.trim()
       );
-
+    var resultForID = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `email`= (?)',emailController.text.trim());
+    //obj.setID = result2;
+    for(var row in resultForID){
+      obj.setID = await row['id'];
+    }
       
   }
 

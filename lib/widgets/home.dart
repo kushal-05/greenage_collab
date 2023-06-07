@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
       );
 
       {
-        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = 1');
+        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = (?)',obj.getID);
         for(var row in results) {
           print(row.toString());
           //Setting up user data
@@ -63,11 +63,11 @@ class _HomeState extends State<Home> {
           obj.setPhone = row['phone_number'].toString();
           obj.setEmail = await row['email'];
         }
-        final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = 1');
+        final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = (?)',obj.getID);
         for (var row in results1) {
           print(row.toString());
           // Setting up user data
-          obj.setID = await row['id'];
+          //obj.setID = await row['id'];
           //obj.setName = await row['Full_Name'];
           //obj.setPhone = row['Phone'].toString();
           //obj.setEmail = await row['Email'];
@@ -221,7 +221,7 @@ void getData() async {
   print('Connected');
 
   {
-    final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = 2');
+    final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = ${obj.getID}');
         for(var row in results) {
           print(row.toString());
           //Setting up user data
@@ -229,11 +229,11 @@ void getData() async {
           obj.setPhone = row['phone_number'].toString();
           obj.setEmail = await row['email'];
         }
-    final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = 2');
+    final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = ${obj.getID}');
     for (var row in results1) {
       print(row.toString());
       // Setting up user data
-      obj.setID = await row['id'];
+      //obj.setID = await row['id'];
       //obj.setName = await row['Full_Name'];
       //obj.setPhone = row['Phone'].toString();
       //obj.setEmail = await row['Email'];
