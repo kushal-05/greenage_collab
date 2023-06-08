@@ -7,6 +7,7 @@ import 'package:greenage/pages/login_page.dart';
 import 'package:greenage/screens/edit_profile.dart';
 import 'package:greenage/screens/pickup_history.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:greenage/widgets/home.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -228,8 +229,10 @@ class _ProfileState extends State<Profile> {
               color: Colors.red,
             ),
             onTap: () {
+              Fluttertoast.showToast(msg: "Logged out successfully");
                 FirebaseAuth.instance.signOut();
                 //Navigator.of(context).popUntil((route) => route.isFirst);
+                obj.setID = 0;
                 Navigator.push(
                   context,
                   MaterialPageRoute(

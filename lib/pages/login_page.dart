@@ -30,8 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 0),() async {
-
+    Future.delayed(Duration.zero, () async {
       conn2 = await MySqlConnection.connect(
         ConnectionSettings(
           host: '34.93.37.194',
@@ -40,28 +39,43 @@ class _LoginPageState extends State<LoginPage> {
           password: 'root',
           db: 'greenage',
         ),
-    );
-    
-    }
-    );
+      );
+    });
+  }
+
+  // to check if email is valid
+  bool isEmailValid(String email) {
+    // Regular expression pattern to validate email format
+    String pattern = r'^[\w-]+(\.[\w-]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$';
+    RegExp regex = RegExp(pattern);
+
+    return regex.hasMatch(email);
   }
 
   // on click of sign in
-  Future signIn() async {
+  signIn() async {
+    print('Inside Signin');
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      var result3 = await conn2.query('SELECT `id` FROM SIGNEDUP_USERS WHERE `email`= (?)',emailController.text.trim());
+      print('authenticated');
+      print(emailController.text.trim());
+      print(conn2);
+      final result3 = await conn2.query(
+          'SELECT * FROM SIGNEDUP_USERS WHERE email = "${emailController.text.trim()}"');
+          print("Received: $result3");
       //obj.setID = result3;
       for (var row1 in result3) {
+        print(await row1['id']);
         obj.setID = await row1['id'];
       }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Home()),
       );
+     
     } catch (Error) {
       if (Error is FirebaseAuthException) {
         if (Error.code == 'wrong-password') {
@@ -72,8 +86,18 @@ class _LoginPageState extends State<LoginPage> {
               toastLength: Toast.LENGTH_LONG,
               backgroundColor: Color.fromARGB(255, 255, 255, 255),
               textColor: Color.fromARGB(255, 0, 0, 0));
+        } else if (Error.code == 'user-not-found') {
+          print('Email not registered');
+          emailController.clear();
+          passwordController.clear();
+          Fluttertoast.showToast(
+            msg: 'Please use a registered email',
+            toastLength: Toast.LENGTH_LONG,
+            backgroundColor: Color.fromARGB(255, 255, 255, 255),
+            textColor: Color.fromARGB(255, 0, 0, 0),
+          );
         } else {
-          print("Authentication failed: ${Error.message}");
+          print('Authentication failed: ${Error.message}');
         }
       }
     }
@@ -132,6 +156,19 @@ class _LoginPageState extends State<LoginPage> {
                             color: Color.fromARGB(212, 255, 255, 255),
                             fontSize: 20),
                         controller: emailController,
+                        onEditingComplete: () {
+                      if (!isEmailValid(emailController.text)) {
+                        Fluttertoast.showToast(
+                          msg: 'Invalid email',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                        emailController.clear();
+                      }
+                    },
                         decoration: InputDecoration(
                           hintStyle:
                               TextStyle(color: Colors.grey, fontSize: 18),
@@ -152,7 +189,8 @@ class _LoginPageState extends State<LoginPage> {
                           filled: true,
                           focusColor: Color.fromARGB(255, 192, 192, 192),
                         ),
-                        validator: (value) {
+                        textInputAction: TextInputAction.next,
+                        /*validator: (value) {
                           bool emailValid = RegExp(
                                   r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                               .hasMatch(value!);
@@ -163,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (!emailValid) {
                             return "Enter valid email";
                           }
-                        },
+                        },*/
                       ),
                     ),
                   ),

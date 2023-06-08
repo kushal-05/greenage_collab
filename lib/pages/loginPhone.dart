@@ -154,6 +154,17 @@ class _loginPhoneState extends State<loginPhone> {
                     fontSize: 18,
                   ),
                   controller: phoneController,
+                  onEditingComplete: () {
+                      if (phoneController.text.trim().length != 10) {
+                        phoneController.clear();
+                        Fluttertoast.showToast(
+                          msg: 'Please enter a valid 10-digit phone number',
+                          toastLength: Toast.LENGTH_LONG,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                      }
+                    },
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
@@ -176,7 +187,7 @@ class _loginPhoneState extends State<loginPhone> {
                     filled: true,
                     focusColor: Color.fromARGB(255, 192, 192, 192),
                   ),
-                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                  // inputFormatters: [LengthLimitingTextInputFormatter(10)],
                 ),
               ),
             ),

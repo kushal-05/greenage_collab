@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:greenage/data/profile_data.dart';
+import 'package:greenage/pages/first_page.dart';
 import 'package:greenage/pages/login_page.dart';
 import 'package:greenage/widgets/home.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -39,14 +40,26 @@ class _EditProfileState extends State<EditProfile> {
       );
       await currentUser!.reauthenticateWithCredential(credential);
       await currentUser!.updatePassword(_newPasswordController.text);
+      /*await FirebaseAuth.instance.signOut();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()),);*/
       //FirebaseAuth.instance.signOut();
       //Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (Error) {
       if (Error is FirebaseAuthException) {
         if (Error.code == 'wrong-password') {
           print("Incorrect password");
-        } else
+          _oldPasswordController.clear();
+          Fluttertoast.showToast(
+              msg: "Please enter valid password",
+              toastLength: Toast.LENGTH_LONG,
+              backgroundColor: Color.fromARGB(255, 255, 255, 255),
+              textColor: Color.fromARGB(255, 0, 0, 0));
+        } else {
           print("Authentication failed: ${Error.message}");
+          _oldPasswordController.clear();
+          _newPasswordController.clear();
+          _confirmNewPasswordController.clear();
+        }
       }
     }
   }

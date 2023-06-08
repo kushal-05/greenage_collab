@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:greenage/data/user_data.dart';
 import 'package:greenage/pages/login_page.dart';
@@ -28,8 +29,7 @@ class _SignUpPageState extends State<signUp> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 0),() async {
-
+    Future.delayed(const Duration(seconds: 0), () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
           host: '34.93.37.194',
@@ -38,45 +38,58 @@ class _SignUpPageState extends State<signUp> {
           password: 'root',
           db: 'greenage',
         ),
-    );
-    
-    }
-    );
+      );
+    });
   }
-  
+
+  // to check if email is valid
+  bool isEmailValid(String email) {
+    // Regular expression pattern to validate email format
+    String pattern = r'^[\w-]+(\.[\w-]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$';
+    RegExp regex = RegExp(pattern);
+
+    return regex.hasMatch(email);
+  }
+
   // on click of sign up
   Future signIn() async {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
     );
-    
+
     //var result = await conn.query('INSERT INTO SIGNEDUP_USERS (name,email,password,phone_number) VALUES (${nameController.text.trim()},${emailController.text.trim()},${phoneController.text.trim()},${passwordController.text.trim()})');
-    var result = await conn.query('INSERT INTO SIGNEDUP_USERS (name,email,password,phone_number) VALUES (?,?,?,?)',[nameController.text.trim(),emailController.text.trim(),passwordController.text.trim(),phoneController.text.trim()]);
+    //var result = await conn.query('INSERT INTO SIGNEDUP_USERS (name, email, password, phone_number) VALUES ("${nameController.text.trim()}", "${emailController.text.trim()}", "${passwordController.text.trim()}", "${phoneController.text.trim()}")');
+    var result = await conn.query('INSERT INTO SIGNEDUP_USERS (name, email, password, phone_number) VALUES (?, ?, ?, ?)',
+    [nameController.text.trim(), emailController.text.trim(), passwordController.text.trim(), phoneController.text.trim()]);
+        print(result); 
+
+    final resultForID = await conn.query(
+          'SELECT * FROM SIGNEDUP_USERS WHERE email = "${emailController.text.trim()}"');
+          print("Received: $resultForID");
+      //obj.setID = result3;
+      for (var row1 in resultForID) {
+        print(await row1['id']);
+        obj.setID = await row1['id'];
+      }
     // add user details
-    addUserDetails(
-      nameController.text.trim(), 
-      emailController.text.trim(), 
-      phoneController.text.trim()
-      );
-    var resultForID = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `email`= (?)',emailController.text.trim());
-    //obj.setID = result2;
-    for(var row in resultForID){
-      obj.setID = await row['id'];
-    }
-      
+    addUserDetails(nameController.text.trim(), emailController.text.trim(),
+        phoneController.text.trim());
+    
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Home()),
+    );
   }
 
-  Future addUserDetails(String fullName, String emailId, String phoneNumber) async {
+  Future addUserDetails(
+      String fullName, String emailId, String phoneNumber) async {
     await FirebaseFirestore.instance.collection('users').add({
       'full name': fullName,
       'email': emailId,
       'phone number': phoneNumber,
     });
-    Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (context) => const Home()),
-      );
+   
   }
 
   // on click of sign in with google
@@ -94,11 +107,11 @@ class _SignUpPageState extends State<signUp> {
     );
 
     // finally, let's sign in
-   await FirebaseAuth.instance.signInWithCredential(credential);
-    
+    await FirebaseAuth.instance.signInWithCredential(credential);
   }
+
   @override
-  void dispose(){
+  void dispose() {
     emailController.dispose();
     passwordController.dispose();
     phoneController.dispose();
@@ -147,10 +160,9 @@ class _SignUpPageState extends State<signUp> {
                   child: TextField(
                     style: TextStyle(
                         color: Color.fromARGB(212, 255, 255, 255),
-                        fontSize: 20
-                      ),
+                        fontSize: 20),
                     controller: nameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
                       hintText: "Full name",
                       prefixIcon: Icon(
@@ -169,6 +181,7 @@ class _SignUpPageState extends State<signUp> {
                       filled: true,
                       focusColor: Color.fromARGB(255, 192, 192, 192),
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
               ),
@@ -186,7 +199,20 @@ class _SignUpPageState extends State<signUp> {
                         color: Color.fromARGB(212, 255, 255, 255),
                         fontSize: 20),
                     controller: emailController,
-                    decoration: InputDecoration(
+                    /*onEditingComplete: () {
+                      if (!isEmailValid(emailController.text)) {
+                        Fluttertoast.showToast(
+                          msg: 'Invalid email',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                        emailController.clear();
+                      }
+                    },*/
+                    decoration: const InputDecoration(
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
                       hintText: "email",
                       prefixIcon: Icon(
@@ -205,6 +231,7 @@ class _SignUpPageState extends State<signUp> {
                       filled: true,
                       focusColor: Color.fromARGB(255, 192, 192, 192),
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
               ),
@@ -218,12 +245,32 @@ class _SignUpPageState extends State<signUp> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField(
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Color.fromARGB(212, 255, 255, 255),
                         fontSize: 20),
                     controller: passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    onEditingComplete: () {
+                      if (passwordController.text.trim().length < 6) {
+                        passwordController.clear();
+                        Fluttertoast.showToast(
+                          msg: 'Password must be at least 6 characters long',
+                          toastLength: Toast.LENGTH_LONG,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                      } else if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(passwordController.text.trim())) {
+                        passwordController.clear();
+                        Fluttertoast.showToast(
+                          msg:
+                              'Password must only contain alphanumeric characters',
+                          toastLength: Toast.LENGTH_LONG,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                      }
+                    },
+                    decoration: const InputDecoration(
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
                       hintText: "password (min 6 characters)",
                       prefixIcon: Icon(
@@ -242,11 +289,12 @@ class _SignUpPageState extends State<signUp> {
                       fillColor: Color.fromARGB(255, 45, 45, 45),
                       filled: true,
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
               ),
-              SizedBox(height: 15),
-              
+             const SizedBox(height: 15),
+
               // Phone number textfield
 
               SizedBox(
@@ -254,11 +302,23 @@ class _SignUpPageState extends State<signUp> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField(
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Color.fromARGB(212, 255, 255, 255),
                         fontSize: 20),
                     controller: phoneController,
-                    decoration: InputDecoration(
+                    onEditingComplete: () {
+                      if (phoneController.text.trim().length != 10) {
+                        phoneController.clear();
+                        Fluttertoast.showToast(
+                          msg: 'Please enter a valid 10-digit phone number',
+                          toastLength: Toast.LENGTH_LONG,
+                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                          textColor: Color.fromARGB(255, 0, 0, 0),
+                        );
+                      }
+                    },
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
                       hintText: "mobile number",
                       prefixIcon: Icon(
@@ -370,7 +430,7 @@ class _SignUpPageState extends State<signUp> {
                         SizedBox(
                           width: 7,
                         ),
-                        Text(
+                        const Text(
                           "Sign up with google",
                           style: TextStyle(
                             //color: Color.fromARGB(210, 255, 255, 255),

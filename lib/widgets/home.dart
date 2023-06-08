@@ -43,6 +43,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    print('In Home.dart');
     Future.delayed(Duration.zero, () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
@@ -55,7 +56,8 @@ class _HomeState extends State<Home> {
       );
 
       {
-        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = (?)',obj.getID);
+        print(obj.getID);
+        final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE id = "${obj.getID}"');
         for(var row in results) {
           print(row.toString());
           //Setting up user data
@@ -63,7 +65,7 @@ class _HomeState extends State<Home> {
           obj.setPhone = row['phone_number'].toString();
           obj.setEmail = await row['email'];
         }
-        final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = (?)',obj.getID);
+        final results1 = await conn.query('SELECT * FROM USERS WHERE id = "${obj.getID}"');
         for (var row in results1) {
           print(row.toString());
           // Setting up user data
@@ -101,34 +103,34 @@ class _HomeState extends State<Home> {
           pickupAddressBrief = words[words.length - 1];
         }
         final getTotalReports = await conn.query(
-            'select COUNT(user_id) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+            'select COUNT(user_id) from REPORTS group by `user_id` having `user_id` = "${obj.getID}"');
         for (var row in getTotalReports) {
           var temp = await row['COUNT(user_id)'];
           totalReports = temp ?? 0;
         }
 
         final getSuccessReports = await conn.query(
-            'select COUNT(`user_id`) from REPORTS group by `user_id`, `status` having `user_id` = ${obj.getID} AND `status` = "Success"');
+            'select COUNT(`user_id`) from REPORTS group by `user_id`, `status` having `user_id` = "${obj.getID}" AND `status` = "Success"');
         for (var row in getSuccessReports) {
           var temp = await row['COUNT(status)'];
           successfulReports = temp ?? 0;
         }
 
         final getPoints = await conn.query(
-            'select SUM(points_earned) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+            'select SUM(points_earned) from REPORTS group by `user_id` having `user_id` = "${obj.getID}"');
         for (var row in getPoints) {
           var temp = await row['SUM(points_earned)'];
           pointsEarnedByReports = temp ?? 0;
         }
 
         var myReports = await conn.query(
-            'select title, status, report_id from REPORTS where user_id = ${obj.getID}');
+            'select title, status, report_id from REPORTS where user_id = "${obj.getID}"');
         for (var row in myReports) {
           reportHistory.add(row);
         }
 
         var myPickups = await conn.query(
-            'select pickup_id, disposal_size, address, total_bill, points_earned from PICKUPS where `user_id` = ${obj.getID}');
+            'select pickup_id, disposal_size, address, total_bill, points_earned from PICKUPS where `user_id` = "${obj.getID}"');
         for (var row in myPickups) {
           pickupHistory.add(row);
         }
@@ -140,9 +142,13 @@ class _HomeState extends State<Home> {
           print(row[0]);
         }
 
-        var eduVideos = await conn.query('select title from EDU_VIDEOS');
+        var eduVideos = await conn.query('select * from EDU_VIDEOS');
         for (var row in eduVideos) {
-          educationalVideos.add(row['title'].toString());
+          EducationVideosData _edxObj = EducationVideosData();
+          _edxObj.title = await row['title'];
+          _edxObj.videoID = await row['link'];
+
+          educationalVideosData.add(_edxObj);
           print(row);
         }
       }
@@ -221,7 +227,7 @@ void getData() async {
   print('Connected');
 
   {
-    final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE `id` = ${obj.getID}');
+    final results = await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE id = "${obj.getID}"');
         for(var row in results) {
           print(row.toString());
           //Setting up user data
@@ -229,7 +235,7 @@ void getData() async {
           obj.setPhone = row['phone_number'].toString();
           obj.setEmail = await row['email'];
         }
-    final results1 = await conn.query('SELECT * FROM USERS WHERE `id` = ${obj.getID}');
+    final results1 = await conn.query('SELECT * FROM USERS WHERE id = "${obj.getID}"');
     for (var row in results1) {
       print(row.toString());
       // Setting up user data

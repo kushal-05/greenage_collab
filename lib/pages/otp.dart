@@ -41,6 +41,7 @@ class _otpPage extends State<otp> {
               backgroundColor: Color.fromARGB(255, 255, 255, 255),
               textColor: Color.fromARGB(255, 0, 0, 0),
               fontSize: 16.0);
+      Navigator.pop(context);
     }
 
   }
