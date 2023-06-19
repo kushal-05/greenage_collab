@@ -32,7 +32,7 @@ class _SignUpPageState extends State<signUp> {
     Future.delayed(const Duration(seconds: 0), () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
-          host: '34.93.37.194',
+          host: '34.93.225.253',
           port: 3306,
           user: 'root',
           password: 'root',
@@ -289,7 +289,7 @@ class _SignUpPageState extends State<signUp> {
                       fillColor: Color.fromARGB(255, 45, 45, 45),
                       filled: true,
                     ),
-                    textInputAction: TextInputAction.next,
+                    // textInputAction: TextInputAction.next,
                   ),
                 ),
               ),
@@ -370,7 +370,7 @@ class _SignUpPageState extends State<signUp> {
 
               const SizedBox(height: 35),
               // or
-              Padding(
+              /*Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   children: const [
@@ -443,7 +443,7 @@ class _SignUpPageState extends State<signUp> {
                     ),
                   ),
                 ),
-              ),
+              ),*/
             ]),
           ),
         ),

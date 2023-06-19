@@ -28,7 +28,7 @@ class _loginPhoneState extends State<loginPhone> {
     Future.delayed(const Duration(seconds: 0), () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
-          host: '34.93.37.194',
+          host: '34.93.225.253',
           port: 3306,
           user: 'root',
           password: 'root',

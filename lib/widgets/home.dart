@@ -47,7 +47,7 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration.zero, () async {
       conn = await MySqlConnection.connect(
         ConnectionSettings(
-          host: '34.93.37.194',
+          host: '34.93.225.253',
           port: 3306,
           user: 'root',
           password: 'root',
@@ -75,8 +75,8 @@ class _HomeState extends State<Home> {
           //obj.setEmail = await row['Email'];
           obj.setAddress = row['Address'].toString();
           obj.setAddressName = row['Address_Name'].toString();
-          obj.setRewardPoints = await row['Reward_Points'];
-          obj.setVouchers = await row['VOUCHERS'];
+          obj.setRewardPoints = await row['Reward_POints'];
+          obj.setVouchers = await row['Vouchers'];
           obj.setDp = row['DP'].toString();
 
           // Retrieving DP from the Database
@@ -131,9 +131,11 @@ class _HomeState extends State<Home> {
 
         var myPickups = await conn.query(
             'select pickup_id, disposal_size, address, total_bill, points_earned from PICKUPS where `user_id` = "${obj.getID}"');
+            if (pickupHistory.isEmpty){
         for (var row in myPickups) {
           pickupHistory.add(row);
-        }
+        } }
+        
 
         var reportsGraphData = await conn.query(
             'select date_format(`date`, "%M"), COUNT(`report_id`) from REPORTS group by date_format(`date`, "%M")');
@@ -216,7 +218,7 @@ void getData() async {
   print('Connecting to CloudSQL...');
   conn = await MySqlConnection.connect(
     ConnectionSettings(
-      host: '34.93.37.194',
+      host: '34.93.225.253',
       port: 3306,
       user: 'root',
       password: 'root',

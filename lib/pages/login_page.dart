@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     Future.delayed(Duration.zero, () async {
       conn2 = await MySqlConnection.connect(
         ConnectionSettings(
-          host: '34.93.37.194',
+          host: '34.93.225.253',
           port: 3306,
           user: 'root',
           password: 'root',
@@ -68,8 +68,8 @@ class _LoginPageState extends State<LoginPage> {
           print("Received: $result3");
       //obj.setID = result3;
       for (var row1 in result3) {
-        print(await row1['id']);
-        obj.setID = await row1['id'];
+        print(row1['id']);
+        obj.setID = row1['id'];
       }
       Navigator.push(
         context,
