@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     Future.delayed(Duration.zero, () async {
       conn2 = await MySqlConnection.connect(
         ConnectionSettings(
-          host: '34.93.225.253',
+          host: '34.100.129.80',
           port: 3306,
           user: 'root',
           password: 'root',
